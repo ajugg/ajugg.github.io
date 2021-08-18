@@ -1,25 +1,91 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Title</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.bootcss.com/uikit/3.2.0/css/uikit-core.min.css" rel="stylesheet">
-    <link href="./main.css" rel="stylesheet">
-    <script src="https://cdn.bootcss.com/uikit/3.2.0/js/uikit.min.js"></script>
-    <script src="./main.js"></script>
+    <title>Vue.js markdown editor example</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/marked@0.3.6"></script>
+    <script src="https://unpkg.com/lodash@4.16.0"></script>
+    <!-- Delete ".min" for console warnings in development -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
 </head>
-
 <body>
-    <h1 class="uk-heading-divider">Tools</h1>
-    <div class="uk-margin">
-        <p>Argument:</p>
-        <input class="uk-input uk-form-width-large uk-form-small" type="text" placeholder="Small" id="changeQuery">
-        <button class="uk-button uk-button-default" onclick="change()">Get</button>
-        <div class="uk-alert-primary" uk-alert id="change">
-            <a class="uk-alert-close" uk-close></a>
-            <p></p>
-        </div>
-    </div>
-</body>
+<h1>To Vec</h1>
+<div id="tovec">
+    <textarea :value="input" @input="update"></textarea>
+    <div v-html="toVec"></div>
+</div>
 
+<h1>To Bin</h1>
+<div id="tobin">
+    <textarea :value="input" @input="update"></textarea>
+    <div v-html="tobin"></div>
+</div>
+
+<h1>Log2</h1>
+<div id="tolog2">
+    <textarea :value="input" @input="update"></textarea>
+    <div v-html="tolog2"></div>
+</div>
+
+<script>
+    new Vue({
+        el: '#tovec',
+        data: {
+            input: ''
+        },
+        computed: {
+            toVec : function () {
+                return this.input.replaceAll('[', '{').replaceAll(']', '}')
+            }
+        },
+        methods: {
+            update: _.debounce(function (e) {
+                this.input = e.target.value
+            }, 300)
+        }
+    })
+
+    new Vue({
+        el: '#tobin',
+        data: {
+            input: ''
+        },
+        computed: {
+            tobin : function () {
+                let val = parseInt((this.input).toString(), 10);
+                if (val !== null) {
+                    return (val >>> 0).toString(2)
+                } else {
+                    return "not number!"
+                }
+            }
+        },
+        methods: {
+            update: _.debounce(function (e) {
+                this.input = e.target.value
+            }, 300)
+        }
+    })
+
+    new Vue({
+        el: '#tolog2',
+        data: {
+            input: '2'
+        },
+        computed: {
+            tolog2 : function () {
+                let val = parseFloat(this.input)
+                return Math.log2(val)
+            }
+        },
+        methods: {
+            update: _.debounce(function (e) {
+                this.input = e.target.value
+            }, 300)
+        }
+    })
+</script>
+
+</body>
 </html>
